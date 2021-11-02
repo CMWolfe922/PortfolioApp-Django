@@ -97,3 +97,8 @@ I am goign to add two more fake projects just for now.
 
 #### END OF THIS SECTION
 Now I know how to create apps, models, migrate those models, and add entrys to the database using Django's shell.
+
+==============
+==============
+
+## Left off at Project App: Views
