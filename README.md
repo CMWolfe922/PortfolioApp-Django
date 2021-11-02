@@ -44,3 +44,7 @@ _In order to do this, I need to type the following into the command prompt/bash 
 ```sh
 $ python manage.py makemigrations projects
 ```
+
+Now that the migration file has been created, I need to apply it. this creates the db by using the migrate command.
+
+`python manage.py migrate projects'
