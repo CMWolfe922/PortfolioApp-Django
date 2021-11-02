@@ -48,3 +48,52 @@ $ python manage.py makemigrations projects
 Now that the migration file has been created, I need to apply it. this creates the db by using the migrate command.
 
 `python manage.py migrate projects'
+
+
+### Use Shell to Create Project Instances:
+
+To create instances of our Project class, we’re going to have to use the Django shell. The Django shell is similar to the Python shell but allows you to access the database and create entries. To access the Django shell, we use another Django management command:
+
+`python manage.py shell`
+
+- Next import my models
+`>>> from projects.models import Project`
+
+*Now I can create a new project with the following attributes:*
+- name: My First Project
+- description: A Web development project
+- technology: Django
+- image: img/prject1.png
+
+**Now in order to do this, I have to use the shell to create an instance of the project using Django's shell**
+```sh
+>> p1 = Project(
+    title='My First Project',
+    description='A Web development project',
+    technology='Django',
+    image='img/project1.png'
+)
+>> p1.save()
+```
+
+that creates an entry into my projects table and saves it to the database which now allows me to display on my portfolio site.
+
+I am goign to add two more fake projects just for now.
+```sh
+>> p2 = Project(
+    title='My second Project',
+    description='Another web development project',
+    technology='Flask',
+    image='img/project2.png'
+)
+>> p2.save()
+>> p3 = Project(
+    title='My third Project',
+    description='My third and final development project fake entry',
+    technology='Django',
+    image='img/project3.png'
+)
+```
+
+#### END OF THIS SECTION
+Now I know how to create apps, models, migrate those models, and add entrys to the database using Django's shell.
