@@ -101,4 +101,66 @@ Now I know how to create apps, models, migrate those models, and add entrys to t
 ==============
 ==============
 
-## Left off at Project App: Views
+## Project App: Views
+Now that I created the projects to display on my portfolio site. I need to create view functions to send the data from the database to the html templates.
+
+- In the projects app, I am going to create two different views:
+1. An index view that shows a snippet of information about each project
+2. a detail view that shows more information on a particular topic.
+
+First, I will start with the index view because the logic is simpler.
+- to do that I need to import the `Project` class from models.py and create a function `project_index()` that renders a template called `project_index.html`
+- inside of the the body of the function, you'll make a Django ORM query to select all objects in the Project table:
+
+```sh
+from django.shortcuts import render
+from projects.models import Project
+
+def project_index(request):
+    projects = Project.all()
+    context = {
+    'projects': projects
+    }
+    return render(request, 'project_index.html', context)
+```
+
+--- Inside that block of code there is a lot that is happening:
+1. Line 5: creates a query for all objects in projects table. With a query you can use simple commands that allows you to create, retrieve, update, or delete objects (or rows) in your database.
+   - a database query returns a collection of all objects that match the query, known as a Queryset. In this case I needed all the objects in the table so it will return a collection of all projects.
+2. Line 6: defines a dictionary `context`, this is used to send the queryset containg all project data. The context variable is used to send information to our template.
+- **EVERY VIEW FUNCTION NEEDS TO HAVE A CONTEXT DICTIONARY**
+
+**Now we create project_detail func:**
+```sh
+def project_detail(request, pk):
+
+    project = Project.objects.get(pk=pk)
+
+    context = {
+
+        'project': project
+
+    }
+
+    return render(request, 'project_detail.html', context)
+```
+#### I NEED TO ADD NOTES ABOVE ABOUT PROJECT DETAIL FUNC FOR FUTURE REFERENCE.
+I am rushing, so I am only going to put minimum notes from here, just on what happens next or copy and paste code examples.
+**==============================================================**
+
+- **Now we hook up the view functions to URLs**
+1. create a urls.py file in the projects directory
+```sh
+from django.urls import path
+
+from . import views
+
+
+urlpatterns = [
+
+    path("", views.project_index, name="project_index"),
+
+    path("<int:pk>/", views.project_detail, name="project_detail"),
+
+]
+```
