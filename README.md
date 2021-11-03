@@ -273,3 +273,53 @@ Inside this for loop, we can access each individual project. To access the proje
 On line 9, we include our project image. Inside the src attribute, we add the code {% static project.image %}. This tells Django to look inside the static files to find a file matching project.image.
 
 The final point that we need to highlight is the link on line 13. This is the link to our project_detail page. Accessing URLs in Django is similar to accessing static files. The code for the URL has the following form:
+
+```sh
+{% url '<url path name>' <view_function_arguments> %}
+```
+
+In this case, we are accessing a URL path named project_detail, which takes integer arguments corresponding to the pk number of the project.
+
+With all that in place, if you start the Django server and visit localhost:8000/projects, then you should see something like this:
+![image of how our projects portfolio should look](https://files.realpython.com/media/Screenshot_2018-12-16_at_16.46.36.a71c744f096a.png)
+
+
+#### With the project_index.html template in place, it’s time to create the project_detail.html template. The code for this template is below:
+
+```sh
+{% extends "base.html" %}
+{% load static %}
+
+{% block page_content %}
+<h1>{{ project.title }}</h1>
+<div class="row">
+    <div class="col-md-8">
+        <img src="{% static project.image %}" alt="" width="100%">
+    </div>
+    <div class="col-md-4">
+        <h5>About the project:</h5>
+        <p>{{ project.description }}</p>
+        <br>
+        <h5>Technology used:</h5>
+        <p>{{ project.technology }}</p>
+    </div>
+</div>
+{% endblock %}
+```
+
+
+The code in this template has the same functionality as each project card in the project_index.html template. The only difference is the introduction of some Bootstrap columns.
+
+If you visit localhost:8000/projects/1, you should see the detail page for that first project you created:
+
+In this section, you learned how to use models, views, and templates to create a fully functioning app for your personal portfolio project. Check out the source code for this section on GitHub.
+
+**=============================================================**
+# New Section:
+## Create a Blog
+- posts can be created, updated, deleted and shared
+- Display posts ti the user as either an index view or a detail view.
+- assign categories to posts
+- allow users to comment on posts.
+
+This section will be about how to use the Django Admin interface, which is where I'll create, update and delete posts and categories as necessary.
