@@ -346,3 +346,6 @@ INSTALLED_APPS = [
 
 ### Blog App: Models
 the `models.py` file in this app is much more complicated than it was for the projects app.
+
+# WHERE I LEFT OFF:
+The spot right above, I never got to start creating the models.
