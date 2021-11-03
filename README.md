@@ -164,3 +164,112 @@ urlpatterns = [
 
 ]
 ```
+#### Now I need to hook these up to the urls.py file in main folder
+
+- add the following line of code in the main urls file:
+  - `path('projects/', include("projects.urls"))`
+- That line of code goes under `urlpatterns` in the main directory.
+The file should look like this when complete:
+```sh
+from django.contrib import admin
+from django.urls import path, include
+
+urlpatterns = [
+    path("admin/", admin.site.urls),
+    path("projects/", include("projects.urls")),
+]
+```
+
+This line of code includes all the URLs in the projects app but means they are accessed when prefixed by projects/. There are now two full URLs that can be accessed with our project:
+
+
+    localhost:8000/projects: The project index page
+    localhost:8000/projects/3: The detail view for the project with pk=3
+
+
+## FINAL STEP: create two templates
+### Projects App: Templates
+1. The `project_index` template
+2. the `proect_detail` template
+
+As we’ve added Bootstrap styles to our application, we can use some pre-styled components to make the views look nice. Let’s start with the project_index template.
+
+For the project_index template, you’ll create a grid of Bootstrap cards, with each card displaying details of the project. Of course, we don’t know how many projects there are going to be. In theory, there could be hundreds to display.
+
+We don’t want to have to create 100 different Bootstrap cards and hard-code in all the information to each project. Instead, we’re going to use a feature of the Django template engine: for loops.
+
+Using this feature, you’ll be able to loop through all the projects and create a card for each one. The for loop syntax in the Django template engine is as follows:
+
+```sh
+{% for project in projects %}
+{# Do something... #}
+{% endfor %}
+
+```
+
+Now that you know how for loops work, you can add the following code to a file named `projects/templates/project_index.html`:
+
+```sh
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block page_content %}
+
+<h1>Projects</h1>
+
+<div class="row">
+
+{% for project in projects %}
+
+    <div class="col-md-4">
+
+        <div class="card mb-2">
+
+            <img class="card-img-top" src="{% static project.image %}">
+
+            <div class="card-body">
+
+                <h5 class="card-title">{{ project.title }}</h5>
+
+                <p class="card-text">{{ project.description }}</p>
+
+                <a href="{% url 'project_detail' project.pk %}"
+
+                   class="btn btn-primary">
+
+                    Read More
+
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    {% endfor %}
+
+</div>
+
+{% endblock %}
+```
+
+
+There’s a lot of Bootstrap HTML here, which is not the focus of this tutorial. Feel free to copy and paste and take a look at the Bootstrap docs if you’re interested in learning more. Instead of focusing on the Bootstrap, there are a few things to highlight in this code block.
+
+In line 1, we extend base.html as we did in the Hello, World! app tutorial. I’ve added some more styling to this file to include a navigation bar and so that all the content is contained in a Bootstrap container. The changes to base.html can be seen in the source code on GitHub.
+
+On line 2, we include a {% load static %} tag to include static files such as images. Remember back in the section on Django models, when you created the Project model. One of its attributes was a filepath. That filepath is where we’re going to store the actual images for each project.
+
+Django automatically registers static files stored in a directory named static/ in each application. Our image file path names were of the structure: img/<photo_name>.png.
+
+When loading static files, Django looks in the static/ directory for files matching a given filepath within static/. So, we need to create a directory named static/ with another directory named img/ inside. Inside img/, you can copy over the images from the source code on GitHub.
+
+On line 6, we begin the for loop, looping over all projects passed in by the context dictionary.
+
+Inside this for loop, we can access each individual project. To access the project’s attributes, you can use dot notation inside double curly brackets. For example, to access the project’s title, you use {{ project.title }}. The same notation can be used to access any of the project’s attributes.
+
+On line 9, we include our project image. Inside the src attribute, we add the code {% static project.image %}. This tells Django to look inside the static files to find a file matching project.image.
+
+The final point that we need to highlight is the link on line 13. This is the link to our project_detail page. Accessing URLs in Django is similar to accessing static files. The code for the URL has the following form:
