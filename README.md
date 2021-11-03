@@ -343,3 +343,6 @@ INSTALLED_APPS = [
     "blog",
 ]
 ```
+
+### Blog App: Models
+the `models.py` file in this app is much more complicated than it was for the projects app.
