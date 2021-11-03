@@ -323,3 +323,23 @@ In this section, you learned how to use models, views, and templates to create a
 - allow users to comment on posts.
 
 This section will be about how to use the Django Admin interface, which is where I'll create, update and delete posts and categories as necessary.
+
+- Before I can start bbuilding out this portion of the site. I need to create another django app inside the my_portfolio_app directory.
+- **To do this go to command line/bash shell and type**
+  - `python manage.py startapp blog`
+*make sure when adding an app, to be in the main project directory*
+
+**now just like before, I need to add the blog app to `INSTALLED_APPS` in `settings.py`**
+
+```sh
+INSTALLED_APPS = [
+    "django.contrib.admin",
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.sessions",
+    "django.contrib.messages",
+    "django.contrib.staticfiles",
+    "projects",
+    "blog",
+]
+```
