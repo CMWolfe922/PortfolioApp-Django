@@ -316,13 +316,16 @@ In this section, you learned how to use models, views, and templates to create a
 
 **=============================================================**
 # New Section:
-## Create a Blog
-- posts can be created, updated, deleted and shared
-- Display posts ti the user as either an index view or a detail view.
-- assign categories to posts
-- allow users to comment on posts.
+## Create a Blog feature to share my knowledge
+This will be a great place to share the knowledge I learn. I can update it daily, weekly, monthly or whenever I want. This will add to what recruiters get to learn about me.
 
-This section will be about how to use the Django Admin interface, which is where I'll create, update and delete posts and categories as necessary.
+- This blog app will allow the following functions:
+    1. Create, update, and delete blog posts.
+    2. Display posts to the users as either an index view or a detail view
+    3. Assign categories to posts
+    4. Allow users to comment on posts
+
+- Also, this is where the Django Admin interface will be learned and utilized. I will be able to create, update, and delete posts and categories as necessary.
 
 - Before I can start bbuilding out this portion of the site. I need to create another django app inside the my_portfolio_app directory.
 - **To do this go to command line/bash shell and type**
@@ -347,5 +350,64 @@ INSTALLED_APPS = [
 ### Blog App: Models
 the `models.py` file in this app is much more complicated than it was for the projects app.
 
-# WHERE I LEFT OFF:
-The spot right above, I never got to start creating the models.
+- For this app I will need three seperate DB tables for the blog:
+  1. Post
+  2. Category
+  3. Comment
+
+These tables need to be related to one another. This is made easier because Django models come with the fields specifically for this purpose.
+
+###### First: I will create the `Categopry` and `Post` models
+
+The code should look like this:
+
+```sh
+from django.db import models
+
+class Category(models.Model): # Very Simple, Just Store Name of Category
+    name = models.CharField(max_length=20) # Give CharField a max length of 20
+
+class Post(models.Model):
+    title = models.CharField(max_length=255) # Only limit title so it isn't too long
+    body = models.TextField() # Body shouldn't be limited for a blog post
+    created_on = models.DateTimeField(auto_now_add=True) #Django's own datetime fields
+    last_modified = models.DateTimeField(auto_now=True)
+    categories = models.ManyToManyField('Category', related_name='posts')
+```
+
+- Django's date time field allows you to store the date and time of when something was created or modified very simply.
+  - `auto_now_add=True` assigns the current date and time to this field anytime an instance of the class is **created**
+  - `auto_now=True` assigns the current date and time to this field whenever an instance of this class is saved. This means whenever I edit an instance of this class, the `date_modified` will be updated.
+
+> The most interesting field on the post model is the final field, `categories`. We want to link our models for categories and posts in such a way that many `categories` can be assigned to many `posts`. Django makes this super easy with the `ManyToManyField`. This field links the `Post` and `Category` models and allows us to create a relationship between the two tables.
+> The `ManyToManyField` takes two arguments. The first is the model with which the relationship is, in this case its `Category`. The second allows us to access the relationship from a `Category` object, even though we haven’t added a field there. By adding a `related_name` of `posts`, we can access `category.posts` to give us a list of `posts` with that `category`.
+
+- The Third aand final model I need is comments. I need a Comment class that uses a relationshipo field similar to ManyToManyField that relates, `Post` and `Category`. However, I only want the relationship to go one way. *Basically* **one post should have many comments**
+
+Defining the `Comment` class:
+```sh
+class Comment(models.Model):
+    author = models.CharField(max_length=60)
+    body = models.TextField()
+    created_on = models.DateTimeField(auto_now_add=True)
+    # created the one to many relationship
+    post = models.ForeignKey('Post', on_delete=models.CASCADE)
+```
+
+The first three models are normal. But the last line, `post` is not something that has been used.
+
+- `post` is another **Relational Field** called the `ForeignKey` field. It is similar to many to many, but instead it is a Many To One relationship.
+  - the reasoning for this in this instance, is that you can have many comments associated with one post, but you cant have a comment associated with many posts.
+
+`ForeignKey` takes in TWO args.
+1. the other model in the relationship (in this case `Post`)
+2. tells Django what to do when a post is deleted.
+   - If a post is deleted then we don't want the comments related to it hanging around. So we delete them as well by adding the `on_delete=models.CASCADE`
+
+##### Now that the models are created, create the migration files.
+
+`$ python manage.py makemigrations blog`
+
+- remember to migrate the tables. This time, don't add the app-specific flag. Later on I will need the `User` model that Django creates for you:
+
+`$ python manage.py migrate`
