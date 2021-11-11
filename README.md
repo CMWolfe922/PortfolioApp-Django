@@ -411,3 +411,14 @@ The first three models are normal. But the last line, `post` is not something th
 - remember to migrate the tables. This time, don't add the app-specific flag. Later on I will need the `User` model that Django creates for you:
 
 `$ python manage.py migrate`
+
+# BLOG APP: Django Admin
+
+Since I am the only one who will be writing blog posts, there is no need to create a user interface to do so. I can just use Django's Admin tool which is really easy and convenient.
+
+To access Admin I have to add myself as a superuser. The reason is because I applied migrations project-wide instead of just for the blog app. Django has a built in user models and a user management system that lets me login to Admin.
+
+to get started type in the shell:
+`$ python manage.py createsuperuser`
+
+- Now I will have to create a username, email, and password. Once those are entered it will tell me te superuser was created. (even if I make a mistake I can just startover)
