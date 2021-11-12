@@ -682,3 +682,41 @@ You’ll **use a for loop to loop over all the posts**. For **each post**, you�
 - then we use a template filter slice to cut off the post body at 400 characters so that the blog index is more readable.
 
 Once that’s in place, you should be able to access this page by visiting **`localhost:8000/blog`:**
+
+###### Create blog_category.html
+This will display the blog posts that correspond to a given category.
+It is Identical to the blog_index.html file except for a few changes. Like the category name inside the h1 tag instead of Blog index
+```sh
+{% extends "base.html" %}
+{% block page_content %}
+<div class="col-md-8 offset-md-2">
+    <!-- Use Django template filter "title". This applies titlecase to the string and
+    makes words start with an uppercase character -->
+    <h1>{{ category | title }}</h1>
+    <hr>
+    <!-- Use for loop to grab each post and dsplay them on the page -->
+    {% for post in posts %}
+        <h2><a href="{% url 'blog_detail' post.pk%}">{{ post.title }}</a></h2>
+        <small>
+            {{ post.created_on.date }} |&nbsp;
+            Categories:&nbsp;
+            {% for category in post.categories.all %}
+            <a href="{% url 'blog_category' category.name %}">
+                {{ category.name }}
+            </a>&nbsp;
+            {% endfor %}
+        </small>
+        <p>{{ post.body | slice:":400" }}...</p>
+        {% endfor %}
+</div>
+{% endblock %}
+```
+Most of this template is identical to the previous template. The only difference is on line 4, where we use another Django template filter [title](https://docs.djangoproject.com/en/2.1/ref/templates/builtins/#title). This applies titlecase to the string and makes words start with an uppercase character.
+
+With that template finished, you’ll be able to access your category view. If you defined a category named python, you should be able to visit localhost:8000/blog/python and see all the posts with that category:
+![Example of what this page should look like](https://robocrop.realpython.net/?url=https%3A//files.realpython.com/media/Screenshot_2018-12-17_at_23.50.51.08dadaa185fc.png&w=696&sig=ba04bfb8c05fe5f7aed0aad6708a93b23286ccc7)
+
+
+The last template to create is the blog_detail template. In this template, you’ll display the title and full body of a post.
+
+Between the title and the body of the post, you’ll display the date the post was created and any categories. Underneath that, you’ll include a comments form so users can add a new comment. Under this, there will be a list of comments that have already been left:
