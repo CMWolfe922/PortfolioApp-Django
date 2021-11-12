@@ -566,3 +566,50 @@ When a form is posted, a `POST` request is sent to the server. So, in the view f
 Once you’ve created the comment from the form, you’ll need to save it using `save()` and then query the database for all the comments assigned to the given post.
 
 - In order to make this work, I will have to update my view function.
+> Add this to the `blog_detail` function
+> ```sh
+> form = CommentForm()
+> if request.method == 'POST':
+>   form=CommentForm(request.POST)
+>   if form.is_valid():
+>       comment = Comment(
+>           author=form.cleaned_data["author"],
+>           body=form.cleaned_data["body"]
+>           post=post
+>       )
+>       comment.save()
+> ```
+- then inside the context dictionary add `"form":form`
+
+ALSO, MAKE SURE TO IMPORT THE FORM AT THE BEGINNING OF THE VIEWS FILE
+`from .forms import CommentForm`
+
+- Next we check if a `POST` request was received. If it is then create a new instance of the form, populated with the data entered into the form.
+- the form is then validated using `is_valid()` If the form is valid, then a new instance of `Comment` is created. **I can access the data from the form using `form.cleaned_data`, which is a dictionary**
+- *The keys of the dictionary correspond to the form fields. This way I can access the fields in the form by using their name. Like the `author` I can just use `form.cleaned_data['author']`* **Don't forget to add the current post to the comment when you create it!**
+
+**The Life Cycle of submitting a Form:**
+>1. When a user visits a page containing a form, they send a GET request to the server. In this case, there’s no data entered in the form, so we just want to render the form and display it.
+>2. When a user enters information and clicks the Submit button, a POST request, containing the data submitted with the form, is sent to the server. At this point, the data must be processed, and two things can happen:
+>   - The form is valid, and the user is redirected to the next page.
+>   - The form is invalid, and empty form is once again displayed. The user is back at step 1, and the process repeats.
+
+##### HEADS UP:
+The Django forms module will show some errors that can be displayed to the user. So when building more complex applications I will need to use this feature. [Click Here For More Information](https://docs.djangoproject.com/en/2.1/topics/forms/#rendering-form-error-messages)
+
+Notice also, that I use the `comment.save()` to save the comment and then we add the form to the context dictionary so that the form can be accessed in the HTML template.
+
+*Now before I can create the templates to see the app up and running, I have to hook up the URLs.*
+**To do this I have to create a `urls.py` file inside the `blog` directory, and then add the URLs for the three views**
+
+###### `urls.py` inside `blog` directory
+```sh
+from django.urls import path
+from . import views
+
+urlpatterns = [
+    path("", views.blog_index, name="blog_index"),
+    path("<int:pk>/", views.blog_detail, name="blog_detail"),
+    path("<category>/", views.blog_category, name="blog_category")
+]
+```
