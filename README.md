@@ -430,3 +430,35 @@ to get started type in the shell:
 `$ python manage.py createsuperuser`
 
 - Now I will have to create a username, email, and password. Once those are entered it will tell me te superuser was created. (even if I make a mistake I can just startover)
+
+## Create Username, email and password for superuser (check black book)
+
+#### Register Models in Admin site:
+Once you login to admin the only "models" that are there will be groups and users. none of the models I created are there. I have to register my models in the Admin Interface.
+
+- So inside the `blog` directory, open up admin.py and add the following code:
+
+```sh
+from django.contrib import admin
+from blog.models import Post, Category
+
+class PostAdmin(admin.ModelAdmin):
+    pass
+
+class CategoryAdmin(admin.ModelAdmin):
+    pass
+
+# Add Comment if I need to monitor them
+
+# class CommentAdmin(admin.ModelAdmin):
+#   pass
+# admin.site.register(Comment, CommentAdmin)
+
+# Now register them
+admin.site.register(Post, PostAdmin)
+admin.site.register(Category, CategoryAdmin)
+```
+
+*That is how to register your models for the Admin site.*
+
+I didn't add the comments because usually I wouldn't have a reason to write or edit comments myself. But if i need to add a feature to monitor and moderate comments then it would be done exactly the same way.
