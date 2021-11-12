@@ -720,3 +720,75 @@ With that template finished, you’ll be able to access your category view. If y
 The last template to create is the blog_detail template. In this template, you’ll display the title and full body of a post.
 
 Between the title and the body of the post, you’ll display the date the post was created and any categories. Underneath that, you’ll include a comments form so users can add a new comment. Under this, there will be a list of comments that have already been left:
+
+```sh
+{% extends "base.html" %}
+{% block page_content %}
+<div class="col-md-8 offset-md-2">
+    <h1>{{ post.title }}</h1>
+    <small>
+        {{ post.created_on.date }} |&nbsp;
+        Categories:&nbsp;
+        {% for category in post.categories.all %}
+        <a href="{% url 'blog_category' category.name %}">
+            {{ category.name }}
+        </a>&nbsp;
+        {% endfor %}
+    </small>
+    <p>{{ post.body | linebreaks }}</p>
+    <h3>Leave a Comment:</h3>
+    <form action="/blog/{{ post.pk }}/" method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            {{ form.author }}
+        </div>
+        <div class="form-group">
+            {{ form.body }}
+        </div>
+        <button type="submit" class="btn btn-primary">Post Comment</button>
+    </form>
+    <h3>Comments:</h3>
+    {% for comment in comments %}
+    <p>
+        On {{ comment.created_on.date }}&nbsp;
+        <b> {{ comment.author }}</b> wrote:
+    </p>
+    <p>{{ comment.body }}</p>
+    <hr>
+    {% endfor %}
+</div>
+{% endblock %}
+
+```
+
+The first few lines of the template in which we display the post title, date, and categories is the same logic as for the previous templates. This time, when rendering the post body, use a linebreaks template filter. This tag registers line breaks as new paragraphs, so the body doesn’t appear as one long block of text.
+
+Underneath the post, on line 16, you’ll display your form. The form action points to the URL path of the page to which you’re sending the POST request to. In this case, it’s the same as the page that is currently being visited. You then add a csrf_token, which provides security and renders the body and author fields of the form, followed by a submit button.
+
+To get the bootstrap styling on the author and body fields, you need to add the form-control class to the text inputs.
+
+Because Django renders the inputs for you when you include {{ form.body }} and {{ form.author }}, you can’t add these classes in the template. That’s why you added the attributes to the form widgets in the previous section.
+
+Underneath the form, there’s another for loop that loops over all the comments on the given post. The comments, body, author, and created_on attributes are all displayed.
+
+Once that template is in place, you should be able to visit localhost:8000/blog/1 and view your first post:
+![Image of blog_detail.html page example](https://robocrop.realpython.net/?url=https%3A//files.realpython.com/media/Screenshot_2018-12-17_at_23.51.17.8849893e9b69.png&w=692&sig=84cd5d93b54a6af67a8e0fa6fe041ff71685e60c)
+
+You should also be able to access the post detail pages by clicking on their title in the blog_index view.
+
+The final finishing touch is to add a link to the blog_index to the navigation bar in base.html. This way, when you click on Blog in the navigation bar, you’ll be able to visit the blog. Check out the updates to base.html in the source code to see how to add that link.
+
+With that now in place, your personal portfolio site is complete, and you’ve created your first Django site. The final version of the source code containing all the features can be found on GitHub, so check it out! Click around the site a bit to see all the functionality and try leaving some comments on your posts!
+
+You may find a few things here and there that you think need polishing. Go ahead and tidy them up. The best way to learn more about this web framework is through practice, so try to extend this project and make it even better! If you’re not sure where to start, I’ve left a few ideas for you in the conclusion below!
+
+### Everything Covered in Part 1:
+- How to create Django **projects** and **apps**
+- how to add web pages with **views** and **templates**
+- how to **get user input with forms**
+- how to *hook* your *views and templates up with URL configurations*
+- How to **add data to your site using relational databases** with **Django's Object Relational Mapper**
+- How to **use the Django Admin to manage my Models**
+
+
+# Part 2:
