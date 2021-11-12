@@ -4,22 +4,27 @@ Creating an app to host my porfolio using django and heroku
 
 ## Instructions For Managing Django Project
 
-__Project App: Models__
+**Project App: Models**
+
 - To store data to display on a website I need a database
 - Django comes with an ORM built-in so I don't need to worry about SQL
   - an ORM is a program that allows **classes to create tables** and **class attributes that correspond to columns** in that table and the **class instances are the rows**
 - When using an ORM the **classes built** representing the database tables **are called models**
   - In Django, these live in the **models.py** module inside each app created.
 
-*Inside my projects app I will only need one table to store different projects that I can display to users.*
+_Inside my projects app I will only need one table to store different projects that I can display to users._
+
 ##### Which means just one model in models.py
+
 I will create a **Projects** model with these fields:
+
 - **title** short string field to hold the name of the project
 - **description** larger string field describing project scope
 - **technology** String field limited to a select number of choices
 - **image** image field that holds the path to where the image is stored.
 
 ###### Example:
+
 ```sh
 from django.db import models
 
@@ -29,13 +34,14 @@ class Project(models.Model):
     technology = models.CharField(max_length=20)
     image = models.FilePathField(path="/img")
 ```
+
 --> Side note, Django comes with many more built in field types. These are just 3 of the basics. CharField needs a max_length, TextField doesn't require a max and the FilePath requires a path to a file name.
 --> Also, By default Django uses SQLite3 but I can add PostgreSQL and or MySQL to this project. But to start the process of creating the Database, I need to create a migration.
 
-__Managing the Migration__
+**Managing the Migration**
 
 - Process of creating the database:
-  - Create a __Migration__
+  - Create a **Migration**
   - This is a file with a migration class
   - It gives Django rules on how and what changes to make to the database.
 
@@ -49,7 +55,6 @@ Now that the migration file has been created, I need to apply it. this creates t
 
 `python manage.py migrate projects'
 
-
 ### Use Shell to Create Project Instances:
 
 To create instances of our Project class, we’re going to have to use the Django shell. The Django shell is similar to the Python shell but allows you to access the database and create entries. To access the Django shell, we use another Django management command:
@@ -57,15 +62,17 @@ To create instances of our Project class, we’re going to have to use the Djang
 `python manage.py shell`
 
 - Next import my models
-`>>> from projects.models import Project`
+  `>>> from projects.models import Project`
 
-*Now I can create a new project with the following attributes:*
+_Now I can create a new project with the following attributes:_
+
 - name: My First Project
 - description: A Web development project
 - technology: Django
 - image: img/prject1.png
 
 **Now in order to do this, I have to use the shell to create an instance of the project using Django's shell**
+
 ```sh
 >> p1 = Project(
     title='My First Project',
@@ -79,6 +86,7 @@ To create instances of our Project class, we’re going to have to use the Djang
 that creates an entry into my projects table and saves it to the database which now allows me to display on my portfolio site.
 
 I am goign to add two more fake projects just for now.
+
 ```sh
 >> p2 = Project(
     title='My second Project',
@@ -96,19 +104,22 @@ I am goign to add two more fake projects just for now.
 ```
 
 #### END OF THIS SECTION
+
 Now I know how to create apps, models, migrate those models, and add entrys to the database using Django's shell.
 
-==============
-==============
+# ==============
 
 ## Project App: Views
+
 Now that I created the projects to display on my portfolio site. I need to create view functions to send the data from the database to the html templates.
 
 - In the projects app, I am going to create two different views:
+
 1. An index view that shows a snippet of information about each project
 2. a detail view that shows more information on a particular topic.
 
 First, I will start with the index view because the logic is simpler.
+
 - to do that I need to import the `Project` class from models.py and create a function `project_index()` that renders a template called `project_index.html`
 - inside of the the body of the function, you'll make a Django ORM query to select all objects in the Project table:
 
@@ -125,12 +136,15 @@ def project_index(request):
 ```
 
 --- Inside that block of code there is a lot that is happening:
+
 1. Line 5: creates a query for all objects in projects table. With a query you can use simple commands that allows you to create, retrieve, update, or delete objects (or rows) in your database.
    - a database query returns a collection of all objects that match the query, known as a Queryset. In this case I needed all the objects in the table so it will return a collection of all projects.
 2. Line 6: defines a dictionary `context`, this is used to send the queryset containg all project data. The context variable is used to send information to our template.
+
 - **EVERY VIEW FUNCTION NEEDS TO HAVE A CONTEXT DICTIONARY**
 
 **Now we create project_detail func:**
+
 ```sh
 def project_detail(request, pk):
 
@@ -144,12 +158,16 @@ def project_detail(request, pk):
 
     return render(request, 'project_detail.html', context)
 ```
+
 #### I NEED TO ADD NOTES ABOVE ABOUT PROJECT DETAIL FUNC FOR FUTURE REFERENCE.
+
 I am rushing, so I am only going to put minimum notes from here, just on what happens next or copy and paste code examples.
 **==============================================================**
 
 - **Now we hook up the view functions to URLs**
+
 1. create a urls.py file in the projects directory
+
 ```sh
 from django.urls import path
 
@@ -164,12 +182,14 @@ urlpatterns = [
 
 ]
 ```
+
 #### Now I need to hook these up to the urls.py file in main folder
 
 - add the following line of code in the main urls file:
   - `path('projects/', include("projects.urls"))`
 - That line of code goes under `urlpatterns` in the main directory.
-The file should look like this when complete:
+  The file should look like this when complete:
+
 ```sh
 from django.contrib import admin
 from django.urls import path, include
@@ -182,13 +202,13 @@ urlpatterns = [
 
 This line of code includes all the URLs in the projects app but means they are accessed when prefixed by projects/. There are now two full URLs that can be accessed with our project:
 
-
     localhost:8000/projects: The project index page
     localhost:8000/projects/3: The detail view for the project with pk=3
 
-
 ## FINAL STEP: create two templates
+
 ### Projects App: Templates
+
 1. The `project_index` template
 2. the `proect_detail` template
 
@@ -255,7 +275,6 @@ Now that you know how for loops work, you can add the following code to a file n
 {% endblock %}
 ```
 
-
 There’s a lot of Bootstrap HTML here, which is not the focus of this tutorial. Feel free to copy and paste and take a look at the Bootstrap docs if you’re interested in learning more. Instead of focusing on the Bootstrap, there are a few things to highlight in this code block.
 
 In line 1, we extend base.html as we did in the Hello, World! app tutorial. I’ve added some more styling to this file to include a navigation bar and so that all the content is contained in a Bootstrap container. The changes to base.html can be seen in the source code on GitHub.
@@ -283,7 +302,6 @@ In this case, we are accessing a URL path named project_detail, which takes inte
 With all that in place, if you start the Django server and visit localhost:8000/projects, then you should see something like this:
 ![image of how our projects portfolio should look](https://files.realpython.com/media/Screenshot_2018-12-16_at_16.46.36.a71c744f096a.png)
 
-
 #### With the project_index.html template in place, it’s time to create the project_detail.html template. The code for this template is below:
 
 ```sh
@@ -307,7 +325,6 @@ With all that in place, if you start the Django server and visit localhost:8000/
 {% endblock %}
 ```
 
-
 The code in this template has the same functionality as each project card in the project_index.html template. The only difference is the introduction of some Bootstrap columns.
 
 If you visit localhost:8000/projects/1, you should see the detail page for that first project you created:
@@ -315,23 +332,28 @@ If you visit localhost:8000/projects/1, you should see the detail page for that 
 In this section, you learned how to use models, views, and templates to create a fully functioning app for your personal portfolio project. Check out the source code for this section on GitHub.
 
 **=============================================================**
+
 # New Section:
+
 ## Create a Blog feature to share my knowledge
+
 This will be a great place to share the knowledge I learn. I can update it daily, weekly, monthly or whenever I want. This will add to what recruiters get to learn about me.
 
 This section will be about how to use the Django Admin interface, which is where I'll create, update and delete posts and categories as necessary.
+
 - This blog app will allow the following functions:
-    1. Create, update, and delete blog posts.
-    2. Display posts to the users as either an index view or a detail view
-    3. Assign categories to posts
-    4. Allow users to comment on posts
+
+  1. Create, update, and delete blog posts.
+  2. Display posts to the users as either an index view or a detail view
+  3. Assign categories to posts
+  4. Allow users to comment on posts
 
 - Also, this is where the Django Admin interface will be learned and utilized. I will be able to create, update, and delete posts and categories as necessary.
 
 - Before I can start bbuilding out this portion of the site. I need to create another django app inside the my_portfolio_app directory.
 - **To do this go to command line/bash shell and type**
   - `python manage.py startapp blog`
-*make sure when adding an app, to be in the main project directory*
+    _make sure when adding an app, to be in the main project directory_
 
 **now just like before, I need to add the blog app to `INSTALLED_APPS` in `settings.py`**
 
@@ -349,15 +371,19 @@ INSTALLED_APPS = [
 ```
 
 ### Blog App: Models
+
 the `models.py` file in this app is much more complicated than it was for the projects app.
 
 # WHERE I LEFT OFF:
+
 The spot right above, I never got to start creating the models.
 
 ##### link to project tutorial:
+
 https://realpython.com/get-started-with-django-1/#why-you-should-learn-django
 
 switch to **blog-main** branch in github, that is where the blog app was created. It hasn't been merged yet.
+
 - For this app I will need three seperate DB tables for the blog:
   1. Post
   2. Category
@@ -390,9 +416,10 @@ class Post(models.Model):
 > The most interesting field on the post model is the final field, `categories`. We want to link our models for categories and posts in such a way that many `categories` can be assigned to many `posts`. Django makes this super easy with the `ManyToManyField`. This field links the `Post` and `Category` models and allows us to create a relationship between the two tables.
 > The `ManyToManyField` takes two arguments. The first is the model with which the relationship is, in this case its `Category`. The second allows us to access the relationship from a `Category` object, even though we haven’t added a field there. By adding a `related_name` of `posts`, we can access `category.posts` to give us a list of `posts` with that `category`.
 
-- The Third aand final model I need is comments. I need a Comment class that uses a relationshipo field similar to ManyToManyField that relates, `Post` and `Category`. However, I only want the relationship to go one way. *Basically* **one post should have many comments**
+- The Third aand final model I need is comments. I need a Comment class that uses a relationshipo field similar to ManyToManyField that relates, `Post` and `Category`. However, I only want the relationship to go one way. _Basically_ **one post should have many comments**
 
 Defining the `Comment` class:
+
 ```sh
 class Comment(models.Model):
     author = models.CharField(max_length=60)
@@ -408,6 +435,7 @@ The first three models are normal. But the last line, `post` is not something th
   - the reasoning for this in this instance, is that you can have many comments associated with one post, but you cant have a comment associated with many posts.
 
 `ForeignKey` takes in TWO args.
+
 1. the other model in the relationship (in this case `Post`)
 2. tells Django what to do when a post is deleted.
    - If a post is deleted then we don't want the comments related to it hanging around. So we delete them as well by adding the `on_delete=models.CASCADE`
@@ -434,6 +462,7 @@ to get started type in the shell:
 ## Create Username, email and password for superuser (check black book)
 
 #### Register Models in Admin site:
+
 Once you login to admin the only "models" that are there will be groups and users. none of the models I created are there. I have to register my models in the Admin Interface.
 
 - So inside the `blog` directory, open up admin.py and add the following code:
@@ -459,14 +488,14 @@ admin.site.register(Post, PostAdmin)
 admin.site.register(Category, CategoryAdmin)
 ```
 
-*That is how to register your models for the Admin site.*
+_That is how to register your models for the Admin site._
 
 I didn't add the comments because usually I wouldn't have a reason to write or edit comments myself. But if i need to add a feature to monitor and moderate comments then it would be done exactly the same way.
-
 
 # BLOG APP: Views
 
 I am going to create three view functions in the `view.py` file in the `blog` directory.
+
 1. `blog_index` This will be a list of all my posts
 2. `blog_detail` This will display the full post along with all the comments and a form to allow users to create new comments.
 3. `blog_category` this is close to what `blog_index` is but it will only display posts of a specific category that the user can choose.
@@ -528,16 +557,18 @@ On line 23, we retrieve all the comments assigned to the given post using Django
 Lastly, add both post and comments to the context dictionary and render the template.
 
 #### Creating Forms In Django:
+
 - To add a form to the page, you’ll need to create another file in the blog directory named forms.py.
-    - Django forms are very similar to models. **A form consists of a class where the class attributes are form fields.**
-    - Django comes with some built-in form fields that you can use to quickly create the form you need.
+
+  - Django forms are very similar to models. **A form consists of a class where the class attributes are form fields.**
+  - Django comes with some built-in form fields that you can use to quickly create the form you need.
 
 - Fields I will use to create my Django form:
   - author --> CharField
   - body --> CharField
   - add a DateTime field for when the form is submitted.
 
-__NOTE__: *if the CharField of my form corresponds to a model CharField, make sure both have the same max_length value*
+**NOTE**: _if the CharField of my form corresponds to a model CharField, make sure both have the same max_length value_
 
 ```sh
 from django import forms
@@ -566,19 +597,20 @@ When a form is posted, a `POST` request is sent to the server. So, in the view f
 Once you’ve created the comment from the form, you’ll need to save it using `save()` and then query the database for all the comments assigned to the given post.
 
 - In order to make this work, I will have to update my view function.
-> Add this to the `blog_detail` function
-> ```sh
-> form = CommentForm()
-> if request.method == 'POST':
->   form=CommentForm(request.POST)
->   if form.is_valid():
->       comment = Comment(
->           author=form.cleaned_data["author"],
->           body=form.cleaned_data["body"]
->           post=post
->       )
->       comment.save()
-> ```
+  > Add this to the `blog_detail` function
+  >
+  > ```sh
+  > form = CommentForm()
+  > if request.method == 'POST':
+  >   form=CommentForm(request.POST)
+  >   if form.is_valid():
+  >       comment = Comment(
+  >           author=form.cleaned_data["author"],
+  >           body=form.cleaned_data["body"]
+  >           post=post
+  >       )
+  >       comment.save()
+  > ```
 - then inside the context dictionary add `"form":form`
 
 ALSO, MAKE SURE TO IMPORT THE FORM AT THE BEGINNING OF THE VIEWS FILE
@@ -586,23 +618,27 @@ ALSO, MAKE SURE TO IMPORT THE FORM AT THE BEGINNING OF THE VIEWS FILE
 
 - Next we check if a `POST` request was received. If it is then create a new instance of the form, populated with the data entered into the form.
 - the form is then validated using `is_valid()` If the form is valid, then a new instance of `Comment` is created. **I can access the data from the form using `form.cleaned_data`, which is a dictionary**
-- *The keys of the dictionary correspond to the form fields. This way I can access the fields in the form by using their name. Like the `author` I can just use `form.cleaned_data['author']`* **Don't forget to add the current post to the comment when you create it!**
+- _The keys of the dictionary correspond to the form fields. This way I can access the fields in the form by using their name. Like the `author` I can just use `form.cleaned_data['author']`_ **Don't forget to add the current post to the comment when you create it!**
 
 **The Life Cycle of submitting a Form:**
->1. When a user visits a page containing a form, they send a GET request to the server. In this case, there’s no data entered in the form, so we just want to render the form and display it.
->2. When a user enters information and clicks the Submit button, a POST request, containing the data submitted with the form, is sent to the server. At this point, the data must be processed, and two things can happen:
->   - The form is valid, and the user is redirected to the next page.
->   - The form is invalid, and empty form is once again displayed. The user is back at step 1, and the process repeats.
+
+> 1.  When a user visits a page containing a form, they send a GET request to the server. In this case, there’s no data entered in the form, so we just want to render the form and display it.
+> 2.  When a user enters information and clicks the Submit button, a POST request, containing the data submitted with the form, is sent to the server. At this point, the data must be processed, and two things can happen:
+>
+> - The form is valid, and the user is redirected to the next page.
+> - The form is invalid, and empty form is once again displayed. The user is back at step 1, and the process repeats.
 
 ##### HEADS UP:
+
 The Django forms module will show some errors that can be displayed to the user. So when building more complex applications I will need to use this feature. [Click Here For More Information](https://docs.djangoproject.com/en/2.1/topics/forms/#rendering-form-error-messages)
 
 Notice also, that I use the `comment.save()` to save the comment and then we add the form to the context dictionary so that the form can be accessed in the HTML template.
 
-*Now before I can create the templates to see the app up and running, I have to hook up the URLs.*
+_Now before I can create the templates to see the app up and running, I have to hook up the URLs._
 **To do this I have to create a `urls.py` file inside the `blog` directory, and then add the URLs for the three views**
 
 ###### `urls.py` inside `blog` directory
+
 ```sh
 from django.urls import path
 from . import views
@@ -615,6 +651,7 @@ urlpatterns = [
 ```
 
 - Once the URLs are created, I add them to the main projects urls.py file using the `include()` function
+
 ```sh
 from django.contrib import admin
 from django.urls import path, include
@@ -625,25 +662,28 @@ urlpatterns = [
     path("blog/", include("blog.urls")),
 ]
 ```
+
 With this set up, all the blog URLs will be prefixed with blog/, and you’ll have the following URL paths:
-  - **localhost:8000/blog:** Blog index
-  - **localhost:8000/blog/1:** Blog detail view of blog with `pk=1`
-  - **localhost:8000/blog/python**: Blog index view of all posts with category python
+
+- **localhost:8000/blog:** Blog index
+- **localhost:8000/blog/1:** Blog detail view of blog with `pk=1`
+- **localhost:8000/blog/python**: Blog index view of all posts with category python
 
 ---> Now to make these urls work, I have to create the templates for them. In this section, you created all the views for your blog application. You learned how to use filters when making queries and how to create Django forms. It won’t be long now until you can see your blog app in action!
 
 ======
 **NEW SECTION**
 ======
+
 #### Blog App: Templates
 
 The final piece of our blog app is the templates. By the end of this section, you’ll have created a fully functioning blog.
 
 **You’ll notice there are some bootstrap elements included in the templates to make the interface prettier**. These aren’t the focus of the tutorial so I’ve glossed over what they do but do check out the [Bootstrap docs](https://getbootstrap.com/docs/4.1/getting-started/introduction/) to find out more.
 
-*The first template you’ll create is for the blog index in a new file blog/templates/blog_index.html. This will be very similar to the projects index view.*
+_The first template you’ll create is for the blog index in a new file blog/templates/blog_index.html. This will be very similar to the projects index view._
 
-You’ll **use a for loop to loop over all the posts**. For **each post**, you’ll **display the title and a snippet of the body**. *As always, you’ll extend the base template personal_porfolio/templates/base.html, which contains our navigation bar and some extra formatting*:
+You’ll **use a for loop to loop over all the posts**. For **each post**, you’ll **display the title and a snippet of the body**. _As always, you’ll extend the base template personal_porfolio/templates/base.html, which contains our navigation bar and some extra formatting_:
 
 ```sh
 {% extends "base.html" %}
@@ -684,8 +724,10 @@ You’ll **use a for loop to loop over all the posts**. For **each post**, you�
 Once that’s in place, you should be able to access this page by visiting **`localhost:8000/blog`:**
 
 ###### Create blog_category.html
+
 This will display the blog posts that correspond to a given category.
 It is Identical to the blog_index.html file except for a few changes. Like the category name inside the h1 tag instead of Blog index
+
 ```sh
 {% extends "base.html" %}
 {% block page_content %}
@@ -711,11 +753,11 @@ It is Identical to the blog_index.html file except for a few changes. Like the c
 </div>
 {% endblock %}
 ```
+
 Most of this template is identical to the previous template. The only difference is on line 4, where we use another Django template filter [title](https://docs.djangoproject.com/en/2.1/ref/templates/builtins/#title). This applies titlecase to the string and makes words start with an uppercase character.
 
 With that template finished, you’ll be able to access your category view. If you defined a category named python, you should be able to visit localhost:8000/blog/python and see all the posts with that category:
 ![Example of what this page should look like](https://robocrop.realpython.net/?url=https%3A//files.realpython.com/media/Screenshot_2018-12-17_at_23.50.51.08dadaa185fc.png&w=696&sig=ba04bfb8c05fe5f7aed0aad6708a93b23286ccc7)
-
 
 The last template to create is the blog_detail template. In this template, you’ll display the title and full body of a post.
 
@@ -783,12 +825,12 @@ With that now in place, your personal portfolio site is complete, and you’ve c
 You may find a few things here and there that you think need polishing. Go ahead and tidy them up. The best way to learn more about this web framework is through practice, so try to extend this project and make it even better! If you’re not sure where to start, I’ve left a few ideas for you in the conclusion below!
 
 ### Everything Covered in Part 1:
+
 - How to create Django **projects** and **apps**
 - how to add web pages with **views** and **templates**
 - how to **get user input with forms**
-- how to *hook* your *views and templates up with URL configurations*
+- how to _hook_ your _views and templates up with URL configurations_
 - How to **add data to your site using relational databases** with **Django's Object Relational Mapper**
 - How to **use the Django Admin to manage my Models**
-
 
 # Part 2:
