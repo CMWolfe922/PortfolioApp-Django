@@ -613,3 +613,26 @@ urlpatterns = [
     path("<category>/", views.blog_category, name="blog_category")
 ]
 ```
+
+- Once the URLs are created, I add them to the main projects urls.py file using the `include()` function
+```sh
+from django.contrib import admin
+from django.urls import path, include
+
+urlpatterns = [
+    path("admin/", admin.site.urls),
+    path("projects/", include("projects.urls")),
+    path("blog/", include("blog.urls")),
+]
+```
+With this set up, all the blog URLs will be prefixed with blog/, and you’ll have the following URL paths:
+  - **localhost:8000/blog:** Blog index
+  - **localhost:8000/blog/1:** Blog detail view of blog with `pk=1`
+  - **localhost:8000/blog/python**: Blog index view of all posts with category python
+
+---> Now to make these urls work, I have to create the templates for them. In this section, you created all the views for your blog application. You learned how to use filters when making queries and how to create Django forms. It won’t be long now until you can see your blog app in action!
+
+======
+**NEW SECTION**
+======
+#### Blog App: Templates
