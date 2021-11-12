@@ -462,3 +462,107 @@ admin.site.register(Category, CategoryAdmin)
 *That is how to register your models for the Admin site.*
 
 I didn't add the comments because usually I wouldn't have a reason to write or edit comments myself. But if i need to add a feature to monitor and moderate comments then it would be done exactly the same way.
+
+
+# BLOG APP: Views
+
+I am going to create three view functions in the `view.py` file in the `blog` directory.
+1. `blog_index` This will be a list of all my posts
+2. `blog_detail` This will display the full post along with all the comments and a form to allow users to create new comments.
+3. `blog_category` this is close to what `blog_index` is but it will only display posts of a specific category that the user can choose.
+
+- So the easiest view function to create will be the index view, just like in the Project app. All I need to do is query all the post objects from my database.
+
+```sh
+from django.shortcuts import render
+from blog.models import Post, Comment
+
+# create the view function
+def blog_index(request):
+    posts = Post.objects.all().order_by('-created_on')
+    context = {
+        "posts": posts,
+    }
+    return render(request, "blog_index.html", context)
+```
+
+On line 2, you import the `Post` and the `Comment` models, and on line 5 inside the view function, you obtain a Queryset containing all the posts in the database. `order_by()` orders the Queryset according to the argument given. The minus sign tells Django to start with the largest value rather than the smallest. We use this, as we want the posts to be ordered with the most recent post first.
+After that you define the `context` dictionary and render the template. (I will create the templates after the view functions are created)
+
+- Remember that each view func needs to have a context dictionary!
+
+--> Now create the `blog_category()` view. This view func will need to take a category as an argument and query the Post database
+
+```sh
+def blog_category(request, category):
+    posts = Post.objects.filter(categories__name__contains=category).order_by('-created_on')
+    context = {
+        "category": category,
+        "posts": posts
+        }
+    return render(request, "blog_category.html", context)
+```
+
+On line 14, you’ve used a Django Queryset filter. The argument of the filter tells Django what conditions need to be met for an object to be retrieved. In this case, we only want posts whose categories contain the category with the name corresponding to that given in the argument of the view function. Again, you’re using order_by() to order posts starting with the most recent.
+
+We then add these posts and the category to the context dictionary, and render our template.
+
+The last view function to add is blog_detail(). This is more complicated as we are going to include a form. Before you add the form, just set up the view function to show a specific post with a comment associated with it. This function will be almost equivalent to the project_detail() view function in the projects app:
+
+```sh
+def blog_detail(request, pk):
+    post = Post.objects.get(pk=pk)
+    comments = Comment.objects.filter(post=post)
+    context = {
+        "post": post,
+        "comments": comments,
+    }
+
+    return render(request, "blog_detail.html", context)
+```
+
+The view function takes a pk value as an argument and, on line 22, retrieves the object with the given pk.
+
+On line 23, we retrieve all the comments assigned to the given post using Django filters again.
+
+Lastly, add both post and comments to the context dictionary and render the template.
+
+#### Creating Forms In Django:
+- To add a form to the page, you’ll need to create another file in the blog directory named forms.py.
+    - Django forms are very similar to models. **A form consists of a class where the class attributes are form fields.**
+    - Django comes with some built-in form fields that you can use to quickly create the form you need.
+
+- Fields I will use to create my Django form:
+  - author --> CharField
+  - body --> CharField
+  - add a DateTime field for when the form is submitted.
+
+__NOTE__: *if the CharField of my form corresponds to a model CharField, make sure both have the same max_length value*
+
+```sh
+from django import forms
+
+class CommentForm(forms.Form):
+    author = forms.CharField(max_length=60, widget=forms.TextInput(
+        attrs={
+            "class":"form-control",
+            "placeholder":"Your Name"
+        }
+    ))
+    body = forms.CharField(widget=forms.Textarea(
+        attrs={
+            "class":"form-control",
+            "placeholder":"Leave a Comment!"
+        }
+    ))
+```
+
+You’ll also notice an argument `widget` has been passed to both the fields. The **author field** has the `forms.TextInput` widget. This tells Django to load this field as an HTML text input element in the templates. The body field uses a `forms.TextArea` widget instead, so that the field is rendered as an HTML text area element.
+
+**These widgets also take an argument** `attrs`, which is a dictionary and allows us to specify some CSS classes, which will help with formatting the template for this view later. It also allows us to add some placeholder text.
+
+When a form is posted, a `POST` request is sent to the server. So, in the view function, we need to check if a `POST` request has been received. We can then create a comment from the form fields. Django comes with a handy `is_valid()` on its forms, so we can check that all the fields have been entered correctly.
+
+Once you’ve created the comment from the form, you’ll need to save it using `save()` and then query the database for all the comments assigned to the given post.
+
+- In order to make this work, I will have to update my view function.
