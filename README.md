@@ -636,3 +636,49 @@ With this set up, all the blog URLs will be prefixed with blog/, and you’ll ha
 **NEW SECTION**
 ======
 #### Blog App: Templates
+
+The final piece of our blog app is the templates. By the end of this section, you’ll have created a fully functioning blog.
+
+**You’ll notice there are some bootstrap elements included in the templates to make the interface prettier**. These aren’t the focus of the tutorial so I’ve glossed over what they do but do check out the [Bootstrap docs](https://getbootstrap.com/docs/4.1/getting-started/introduction/) to find out more.
+
+*The first template you’ll create is for the blog index in a new file blog/templates/blog_index.html. This will be very similar to the projects index view.*
+
+You’ll **use a for loop to loop over all the posts**. For **each post**, you’ll **display the title and a snippet of the body**. *As always, you’ll extend the base template personal_porfolio/templates/base.html, which contains our navigation bar and some extra formatting*:
+
+```sh
+{% extends "base.html" %}
+{% block page_content %}
+<div class="col-md-8 offset-md-2">
+    <h1>Blog Index</h1>
+    <hr>
+    {% for post in posts %}
+    <!-- Show the post title using a hyperlink which is a Django hyperlink pointing to the
+    URL named blog_detail. It will take an integer as its argument and should correspond to
+    the pk value of the post -->
+    <h2><a href="{% url 'blog_detail' post.pk%}">{{ post.title }}</a></h2>
+    <small>
+        <!-- Now show the created_on attribute of the post and its category. The for loop
+        is to loop over all the categories assigned to the post -->
+        {{ post.created_on.date }} |&nbsp;
+        Categories:&nbsp;
+        {% for category in post.categories.all %}
+        <a href="{% url 'blog_category' category.name %}">
+            {{ category.name }}
+        </a>&nbsp;
+        {% endfor %}
+    </small>
+    <!-- use a template filter slice that cuts the body of the post off at 400 characters
+    which will make the blog index more readable -->
+    <p>{{ post.body | slice:":400" }}...</p>
+    {% endfor %}
+</div>
+{% endblock %}
+```
+
+- First, we have the post title, which is a hyperlink. The link is a Django link where we are pointing to the URL named blog_detail, which takes an integer as its argument and should correspond to the pk value of the post.
+
+- Underneath the title, we’ll display the created_on attribute of the post as well as its categories. On line 11, we use another for loop to loop over all the categories assigned to the post.
+
+- then we use a template filter slice to cut off the post body at 400 characters so that the blog index is more readable.
+
+Once that’s in place, you should be able to access this page by visiting **`localhost:8000/blog`:**
