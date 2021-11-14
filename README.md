@@ -4,6 +4,10 @@ Creating an app to host my porfolio using django and heroku
 
 ## Instructions For Managing Django Project
 
+### RUNNING THE DJANGO SERVER
+
+> `python manage.py runserver`
+
 **Project App: Models**
 
 - To store data to display on a website I need a database
