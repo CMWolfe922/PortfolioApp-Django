@@ -30,7 +30,7 @@ def blog_category(request, category):
 def blog_detail(request, pk):
     post = Post.objects.get(pk=pk)
 
-    # Updated area to accomodate my Djago form I created to post comments
+    # Updated area to accomodate my Django form I created to post comments
     form = CommentForm()
     if request.method == "POST":
         form = CommentForm(request.POST)
