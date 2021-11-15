@@ -4,13 +4,8 @@
     <h1>Blog Index</h1>
     <hr>
     {% for post in posts %}
-    <!-- Show the post title using a hyperlink which is a Django hyperlink pointing to the
-    URL named blog_detail. It will take an integer as its argument and should correspond to
-    the pk value of the post -->
     <h2><a href="{% url 'blog_detail' post.pk%}">{{ post.title }}</a></h2>
     <small>
-        <!-- Now show the created_on attribute of the post and its category. The for loop
-        is to loop over all the categories assigned to the post -->
         {{ post.created_on.date }} |&nbsp;
         Categories:&nbsp;
         {% for category in post.categories.all %}
@@ -19,8 +14,6 @@
         </a>&nbsp;
         {% endfor %}
     </small>
-    <!-- use a template filter slice that cuts the body of the post off at 400 characters
-    which will make the blog index more readable -->
     <p>{{ post.body | slice:":400" }}...</p>
     {% endfor %}
 </div>

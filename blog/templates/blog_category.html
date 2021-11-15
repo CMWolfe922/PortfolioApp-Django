@@ -1,11 +1,8 @@
 {% extends "base.html" %}
 {% block page_content %}
 <div class="col-md-8 offset-md-2">
-    <!-- Use Django template filter "title". This applies titlecase to the string and
-    makes words start with an uppercase character -->
     <h1>{{ category | title }}</h1>
     <hr>
-    <!-- Use for loop to grab each post and dsplay them on the page -->
     {% for post in posts %}
         <h2><a href="{% url 'blog_detail' post.pk%}">{{ post.title }}</a></h2>
         <small>
